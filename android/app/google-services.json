@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "610174489320",
+    "project_id": "offline-courier-app",
+    "storage_bucket": "offline-courier-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610174489320:android:e7e41e63205661f4e7ef5d",
+        "android_client_info": {
+          "package_name": "com.alperburaak.offline_courier_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA92QEP8CE65de7qUmWxvM2MeD9-_psZv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
