@@ -2,6 +2,8 @@
 
 A new Flutter project.
 
+"This project is being developed to allow couriers to store data locally when offline and send it to the database once they are online."
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
