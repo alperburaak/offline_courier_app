@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:offline_courier_app/providers/delivery_provider.dart';
+import 'package:offline_courier_app/ui/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 class ScanPage extends StatefulWidget {
@@ -106,7 +107,11 @@ class _ScanPageState extends State<ScanPage> {
                   if (barcode.isNotEmpty) {
                     await _saveToFirestore(barcode); // Firebase'e kaydet
                     Navigator.pop(context); // Popup'ı kapat
-                    Navigator.pop(context); // Ana sayfaya geri dön
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                      (Route<dynamic> route) => false,
+                    ); // Ana sayfaya geri dön
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Lütfen barkod girin')),

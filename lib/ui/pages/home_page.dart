@@ -1,48 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:offline_courier_app/core/services/auth_service.dart';
 import 'package:offline_courier_app/providers/delivery_provider.dart';
+import 'package:offline_courier_app/ui/pages/login_page.dart';
 import 'package:offline_courier_app/ui/pages/scan_page.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    DeliveryProvider deliveryProvider = Provider.of<DeliveryProvider>(
+      context,
+      listen: false,
+    );
+    deliveryProvider.getUserDeliveries();
+  }
+
+  Future<void> _logout() async {
+    await AuthService().logoutUser();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var deliveryProvider = Provider.of<DeliveryProvider>(context);
-
     return Scaffold(
-      appBar: AppBar(title: Text('Teslimatlar')),
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder(
-              future: deliveryProvider.getAllDeliveries(),
-              builder: (
-                context,
-                AsyncSnapshot<List<Map<String, dynamic>>> snapshot,
-              ) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Bir hata oluştu: ${snapshot.error}'),
-                  );
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Henüz teslimat yok.'));
-                } else {
-                  List<Map<String, dynamic>> deliveries = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: deliveries.length,
-                    itemBuilder: (context, index) {
-                      var delivery = deliveries[index];
-                      return ListTile(
-                        title: Text(delivery['barcode'] ?? 'Barkod Bulunamadı'),
-                        subtitle: Text('Adres: ${delivery['address']}'),
-                        trailing: Text('Durum: ${delivery['status']}'),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+      appBar: AppBar(
+        title: Text("Siparişlerim"),
+        actions: [IconButton(icon: Icon(Icons.logout), onPressed: _logout)],
+      ),
+      body: Consumer<DeliveryProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.deliveries.isEmpty) {
+            return Center(child: Text("Siparişiniz bulunmamaktadır."));
+          }
+
+          return ListView.builder(
+            itemCount: provider.deliveries.length,
+            itemBuilder: (context, index) {
+              var order = provider.deliveries[index];
+              return Card(
+                child: ListTile(
+                  title: Text("Barkod: ${order['barcode']}"),
+                  subtitle: Text("Durum: ${order['status']}"),
+                  trailing: Text(
+                    order['deliveryDate'].toString().split('T')[0],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
