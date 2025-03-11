@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:offline_courier_app/core/services/delivery_service.dart';
 
@@ -16,16 +17,22 @@ class DeliveryProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAllDeliveries() async {
+  Future<List<Map<String, dynamic>>> getUserDeliveries() async {
     try {
       isLoading = true;
-      List<Map<String, dynamic>> result =
-          await DeliveryService().getAllDeliveries();
-      if (result != null) {
-        deliveries = result;
-      } else {
+      notifyListeners();
+
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
         deliveries = [];
+        return [];
       }
+
+      // Kullanıcının kendi siparişlerini getir
+      List<Map<String, dynamic>> result = await DeliveryService()
+          .getUserDeliveries(userId);
+
+      deliveries = result;
       return deliveries;
     } catch (e) {
       throw Exception('Veri getirme hatası: $e');
